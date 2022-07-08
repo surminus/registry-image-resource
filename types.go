@@ -14,7 +14,6 @@ import (
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/credentials/stscreds"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ecr"
@@ -55,13 +54,10 @@ type OutResponse struct {
 }
 
 type AwsCredentials struct {
-	AwsAccessKeyId     string   `json:"aws_access_key_id,omitempty"`
-	AwsSecretAccessKey string   `json:"aws_secret_access_key,omitempty"`
-	AwsSessionToken    string   `json:"aws_session_token,omitempty"`
-	AwsRegion          string   `json:"aws_region,omitempty"`
-	AWSECRRegistryId   string   `json:"aws_ecr_registry_id,omitempty"`
-	AwsRoleArn         string   `json:"aws_role_arn,omitempty"`
-	AwsRoleArns        []string `json:"aws_role_arns,omitempty"`
+	AwsRegion        string   `json:"aws_region,omitempty"`
+	AWSECRRegistryId string   `json:"aws_ecr_registry_id,omitempty"`
+	AwsRoleArn       string   `json:"aws_role_arn,omitempty"`
+	AwsRoleArns      []string `json:"aws_role_arns,omitempty"`
 }
 
 type BasicCredentials struct {
@@ -307,10 +303,13 @@ func (source *Source) AuthenticateToECR() bool {
 		return false
 	}
 
-	mySession := session.Must(session.NewSession(&aws.Config{
-		Region:      aws.String(source.AwsRegion),
-		Credentials: credentials.NewStaticCredentials(source.AwsAccessKeyId, source.AwsSecretAccessKey, source.AwsSessionToken),
-	}))
+	mySession, err := session.NewSession(&aws.Config{
+		Region: aws.String(source.AwsRegion),
+	})
+	if err != nil {
+		logrus.Errorf("failed to authenticate with AWS: %s", err)
+		return false
+	}
 
 	// Note: This implementation gives precedence to `aws_role_arn` since it
 	// assumes that we've errored if both `aws_role_arn` and `aws_role_arns`

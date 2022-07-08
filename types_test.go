@@ -53,9 +53,7 @@ var _ = Describe("Source", func() {
 			source := resource.Source{
 				Repository: "foo",
 				AwsCredentials: resource.AwsCredentials{
-					AwsAccessKeyId:     "foo",
-					AwsSecretAccessKey: "bar",
-					AwsRegion:          "us-east-1",
+					AwsRegion: "us-east-1",
 				},
 			}
 
@@ -69,10 +67,8 @@ var _ = Describe("Source", func() {
 			source := resource.Source{
 				Repository: "foo",
 				AwsCredentials: resource.AwsCredentials{
-					AwsAccessKeyId:     "foo",
-					AwsSecretAccessKey: "bar",
-					AwsRegion:          "us-east-1",
-					AWSECRRegistryId:   "012345678901",
+					AwsRegion:        "us-east-1",
+					AWSECRRegistryId: "012345678901",
 				},
 			}
 
